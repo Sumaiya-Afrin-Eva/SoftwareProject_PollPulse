@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | PollPulse</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">PollPulse</a>
+    <form th:action="@{/logout}" method="post">
+        <button class="button button-secondary" type="submit">Logout</button>
+    </form>
+</header>
+<main class="page-shell">
+    <section class="card">
+        <p class="eyebrow">Your account</p>
+        <h1>Welcome, <span th:text="${name}">Student</span></h1>
+        <h2 class="section-title">Your roles</h2>
+        <ul class="role-list">
+            <li class="role-pill" th:each="role : ${roles}" th:text="${role}">ROLE_VOTER</li>
+        </ul>
+    </section>
+</main>
+</body>
+</html>
