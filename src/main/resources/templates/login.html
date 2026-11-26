@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | PollPulse</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<main class="page-shell">
+    <section class="card auth-card">
+        <a class="brand" th:href="@{/}">PollPulse</a>
+        <h1>Welcome back</h1>
+        <p class="muted">Sign in with your campus election account.</p>
+
+        <div class="alert alert-error" role="alert" th:if="${param.error}">
+            The email or password was incorrect.
+        </div>
+        <div class="alert alert-success" role="status" th:if="${param.logout}">
+            You have been logged out.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="username" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+            <button class="button button-full" type="submit">Login</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>
