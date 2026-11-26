@@ -44,3 +44,6 @@ jobs:
       - name: Build Docker image
         if: hashFiles('Dockerfile') != ''
         run: docker build -t pollpulse:ci .
+
+      - name: Build and test
+        run: mvn -B clean verify -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
