@@ -20,6 +20,9 @@
         <div class="alert alert-success" role="status" th:if="${param.logout}">
             You have been logged out.
         </div>
+        <div class="alert alert-success" role="status" th:if="${param.registered}">
+            Your account was created. You can now log in.
+        </div>
 
         <form th:action="@{/login}" method="post">
             <label for="email">Email</label>
@@ -30,6 +33,7 @@
 
             <button class="button button-full" type="submit">Login</button>
         </form>
+        <p class="auth-footer">New to PollPulse? <a th:href="@{/register}">Create an account</a></p>
     </section>
 </main>
 </body>
