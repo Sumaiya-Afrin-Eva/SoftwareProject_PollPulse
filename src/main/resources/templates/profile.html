@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>Your profile | PollPulse</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/dashboard}">PollPulse</a>
+    <form th:action="@{/logout}" method="post">
+        <button class="button button-secondary" type="submit">Logout</button>
+    </form>
+</header>
+<main class="page-shell">
+    <section class="card profile-card">
+        <p class="eyebrow">Account settings</p>
+        <h1>Your profile</h1>
+        <p class="muted">Update your campus details and account password.</p>
+
+        <div id="profile-message" class="alert" role="status" hidden></div>
+        <form id="profile-form" class="profile-form">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" minlength="2" maxlength="100" required>
+            <p class="field-error" data-error-for="name"></p>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" readonly>
+
+            <label for="department">Department <span class="optional">(optional)</span></label>
+            <input id="department" name="department" type="text" maxlength="100">
+            <p class="field-error" data-error-for="department"></p>
+
+            <label for="batch">Batch <span class="optional">(optional)</span></label>
+            <input id="batch" name="batch" type="text" maxlength="100">
+            <p class="field-error" data-error-for="batch"></p>
+
+            <label for="hall">Hall <span class="optional">(optional)</span></label>
+            <input id="hall" name="hall" type="text" maxlength="100">
+            <p class="field-error" data-error-for="hall"></p>
+
+            <button class="button button-full" type="submit">Save profile</button>
+        </form>
+
+        <h2 class="section-title">Change password</h2>
+        <form id="password-form" class="profile-form">
+            <label for="currentPassword">Current password</label>
+            <input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required>
+            <p class="field-error" data-error-for="currentPassword"></p>
+
+            <label for="newPassword">New password</label>
+            <input id="newPassword" name="newPassword" type="password" autocomplete="new-password" required>
+            <p class="field-error" data-error-for="newPassword"></p>
+
+            <button class="button button-full" type="submit">Change password</button>
+        </form>
+    </section>
+</main>
+<script>
+    const message = document.getElementById("profile-message");
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    function clearMessages() {
+        message.textContent = "";
+        message.hidden = true;
+        message.className = "alert";
+        document.querySelectorAll("[data-error-for]").forEach((element) => {
+            element.textContent = "";
+        });
+    }
+
+    function showMessage(text, success = false) {
+        message.textContent = text;
+        message.className = success ? "alert alert-success" : "alert alert-error";
+        message.hidden = false;
+    }
+
+    function showFieldErrors(fieldErrors) {
+        Object.entries(fieldErrors).forEach(([field, text]) => {
+            const target = Array.from(document.querySelectorAll("[data-error-for]"))
+                .find((element) => element.dataset.errorFor === field);
+            if (target) {
+                target.textContent = text;
+            }
+        });
+    }
+
+    async function readError(response) {
+        const result = await response.json();
+        if (response.status === 400
+                && result.fieldErrors
+                && Object.keys(result.fieldErrors).length > 0) {
+            showFieldErrors(result.fieldErrors);
+            return;
+        }
+        showMessage(result.message || "The request could not be completed.");
+    }
+
+    async function loadProfile() {
+        try {
+            const response = await fetch("/api/users/me");
+            if (!response.ok) {
+                await readError(response);
+                return;
+            }
+            const user = await response.json();
+            ["name", "email", "department", "batch", "hall"].forEach((field) => {
+                document.getElementById(field).value = user[field] || "";
+            });
+        } catch {
+            showMessage("Your profile could not be loaded. Please try again.");
+        }
+    }
+
+    document.getElementById("profile-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearMessages();
+        const values = Object.fromEntries(new FormData(event.currentTarget).entries());
+        delete values.email;
+        try {
+            const response = await fetch("/api/users/me", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify(values)
+            });
+            if (!response.ok) {
+                await readError(response);
+                return;
+            }
+            const user = await response.json();
+            document.getElementById("name").value = user.name;
+            document.getElementById("department").value = user.department || "";
+            document.getElementById("batch").value = user.batch || "";
+            document.getElementById("hall").value = user.hall || "";
+            showMessage("Profile updated successfully.", true);
+        } catch {
+            showMessage("Your profile could not be saved. Please try again.");
+        }
+    });
+
+    document.getElementById("password-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearMessages();
+        const values = Object.fromEntries(new FormData(event.currentTarget).entries());
+        try {
+            const response = await fetch("/api/users/me/password", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify(values)
+            });
+            if (!response.ok) {
+                await readError(response);
+                return;
+            }
+            event.currentTarget.reset();
+            showMessage("Password changed successfully.", true);
+        } catch {
+            showMessage("Your password could not be changed. Please try again.");
+        }
+    });
+
+    loadProfile();
+</script>
+</body>
+</html>
