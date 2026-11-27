@@ -43,6 +43,7 @@ public class SecurityConfig {
             HttpSecurity http,
             ApiAuthenticationEntryPoint apiAuthenticationEntryPoint,
             ApiAccessDeniedHandler apiAccessDeniedHandler,
+            LoginFailureHandler loginFailureHandler,
             HttpSessionSecurityContextRepository securityContextRepository) throws Exception {
         AntPathRequestMatcher apiRequestMatcher = new AntPathRequestMatcher("/api/**");
             LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>();
@@ -70,7 +71,7 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .usernameParameter("email")
                         .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/login?error")
+                        .failureHandler(loginFailureHandler)
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
