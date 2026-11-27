@@ -19,6 +19,9 @@
         <div class="alert alert-error" role="alert" th:if="${param.error}">
             The email or password was incorrect.
         </div>
+        <div class="alert alert-error" role="alert" th:if="${param.locked}">
+            Too many failed attempts. Try again in 15 minutes.
+        </div>
         <div class="alert alert-success" role="status" th:if="${param.logout}">
             You have been logged out.
         </div>

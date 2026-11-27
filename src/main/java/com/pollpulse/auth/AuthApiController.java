@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthApiController {
+
+    private static final String LOCKED_MESSAGE = "Too many failed attempts. Try again in 15 minutes.";
 
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
@@ -71,18 +74,26 @@ public class AuthApiController {
             SecurityContextHolder.setContext(context);
             securityContextRepository.saveContext(context, servletRequest, servletResponse);
             return ResponseEntity.ok(authService.getUserResponseByEmail(authentication.getName()));
+        } catch (LockedException exception) {
+            SecurityContextHolder.clearContext();
+            return authenticationFailure(
+                    HttpStatus.UNAUTHORIZED, LOCKED_MESSAGE, servletRequest.getRequestURI());
         } catch (AuthenticationException exception) {
             SecurityContextHolder.clearContext();
-            HttpStatus status = HttpStatus.UNAUTHORIZED;
-            ApiError error = new ApiError(
-                    Instant.now(),
-                    status.value(),
-                    status.getReasonPhrase(),
-                    "Invalid email or password",
-                    servletRequest.getRequestURI(),
-                    Map.of());
-            return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON).body(error);
+            return authenticationFailure(
+                    HttpStatus.UNAUTHORIZED, "Invalid email or password", servletRequest.getRequestURI());
         }
+    }
+
+    private ResponseEntity<ApiError> authenticationFailure(HttpStatus status, String message, String path) {
+        ApiError error = new ApiError(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                path,
+                Map.of());
+        return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON).body(error);
     }
 
     @PostMapping("/logout")
