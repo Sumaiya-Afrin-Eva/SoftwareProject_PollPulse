@@ -49,27 +49,12 @@ public class AuthService {
         user.setRoles(Set.of(voterRole));
 
         User savedUser = userRepository.save(user);
-        return toResponse(savedUser);
+        return UserResponse.from(savedUser);
     }
 
     public UserResponse getUserResponseByEmail(String email) {
         User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return toResponse(user);
-    }
-
-    private UserResponse toResponse(User user) {
-        return new UserResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getDepartment(),
-                user.getBatch(),
-                user.getHall(),
-                user.isEnabled(),
-                user.getRoles().stream()
-                        .map(role -> role.getName().name())
-                        .sorted()
-                        .toList());
+        return UserResponse.from(user);
     }
 }
