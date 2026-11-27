@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.pollpulse.exception.ConflictException;
+import com.pollpulse.exception.ResourceNotFoundException;
 import com.pollpulse.user.Role;
 import com.pollpulse.user.RoleName;
 import com.pollpulse.user.RoleRepository;
@@ -49,6 +50,12 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
         return toResponse(savedUser);
+    }
+
+    public UserResponse getUserResponseByEmail(String email) {
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return toResponse(user);
     }
 
     private UserResponse toResponse(User user) {
