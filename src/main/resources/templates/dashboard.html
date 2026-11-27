@@ -19,6 +19,7 @@
     <section class="card">
         <p class="eyebrow">Your account</p>
         <h1>Welcome, <span th:text="${name}">Student</span></h1>
+        <p><a th:href="@{/profile}">Profile</a></p>
         <h2 class="section-title">Your roles</h2>
         <ul class="role-list">
             <li class="role-pill" th:each="role : ${roles}" th:text="${role}">ROLE_VOTER</li>
