@@ -91,5 +91,21 @@ class LoginIntegrationTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?error"))
                 .andExpect(unauthenticated());
+
+        for (int attempt = 1; attempt < 5; attempt++) {
+            mockMvc.perform(formLogin("/login")
+                            .user("email", EMAIL)
+                            .password("wrong-password"))
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrl("/login?error"))
+                    .andExpect(unauthenticated());
+        }
+
+        mockMvc.perform(formLogin("/login")
+                        .user("email", EMAIL)
+                        .password(PASSWORD))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?locked"))
+                .andExpect(unauthenticated());
     }
 }
