@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockMakers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,14 +26,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @ExtendWith(MockitoExtension.class)
 class CustomUserDetailsServiceTest {
 
-    @Mock
+    @Mock(mockMaker = MockMakers.SUBCLASS)
     private UserRepository userRepository;
+
+    @Mock(mockMaker = MockMakers.SUBCLASS)
+    private LoginAttemptService loginAttemptService;
 
     private CustomUserDetailsService userDetailsService;
 
     @BeforeEach
     void setUp() {
-        userDetailsService = new CustomUserDetailsService(userRepository);
+        userDetailsService = new CustomUserDetailsService(userRepository, loginAttemptService);
     }
 
     @Test
