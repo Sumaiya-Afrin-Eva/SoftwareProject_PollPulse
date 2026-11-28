@@ -58,3 +58,49 @@
     background: #eaf8f0;
     color: #17643b;
 }
+
+.profile-card {
+    width: min(100%, 42rem);
+}
+
+.profile-card h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.profile-form {
+    display: grid;
+    gap: 0.7rem;
+    margin-top: 1.5rem;
+}
+
+.profile-form label {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.profile-form input {
+    width: 100%;
+    min-height: 2.9rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid #d5deeb;
+    border-radius: 0.55rem;
+    background: #fff;
+    color: #17243b;
+    font: inherit;
+}
+
+.profile-form input:focus {
+    border-color: #4877df;
+    outline: 3px solid rgba(72, 119, 223, 0.16);
+}
+
+.profile-form input[readonly] {
+    background: #f3f6fb;
+}
+
+.field-error {
+    margin: -0.35rem 0 0;
+    color: #a52c25;
+    font-size: 0.85rem;
+}
