@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -73,20 +74,24 @@ class GlobalExceptionHandlerTest {
     static class DummyRestController {
 
         @GetMapping("/test/not-found")
+        @PreAuthorize("permitAll()")
         void notFound() {
             throw new ResourceNotFoundException("Election not found");
         }
 
         @PostMapping("/test/validate")
+        @PreAuthorize("permitAll()")
         void validate(@Valid @RequestBody ValidationRequest request) {
         }
 
         @GetMapping("/test/conflict")
+        @PreAuthorize("permitAll()")
         void conflict() {
             throw new ConflictException("Election already exists");
         }
 
         @GetMapping("/test/unexpected")
+        @PreAuthorize("permitAll()")
         void unexpected() {
             throw new IllegalStateException("sensitive details");
         }
