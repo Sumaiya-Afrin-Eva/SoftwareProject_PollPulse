@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockMakers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -24,7 +25,7 @@ class AuditServiceTest {
 
     private static final Instant FIXED_INSTANT = Instant.parse("2026-01-01T10:15:30.123Z");
 
-    @Mock
+    @Mock(mockMaker = MockMakers.SUBCLASS)
     private AuditLogRepository auditLogRepository;
 
     private final List<AuditLog> stored = new ArrayList<>();
