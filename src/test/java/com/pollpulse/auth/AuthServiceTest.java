@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockMakers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -31,10 +32,10 @@ class AuthServiceTest {
 
     private static final String RAW_PASSWORD = "StrongPass1!";
 
-    @Mock
+    @Mock(mockMaker = MockMakers.SUBCLASS)
     private UserRepository userRepository;
 
-    @Mock
+    @Mock(mockMaker = MockMakers.SUBCLASS)
     private RoleRepository roleRepository;
 
     private AuthService authService;
