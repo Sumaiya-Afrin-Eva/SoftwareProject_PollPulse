@@ -28,6 +28,9 @@ class UserServiceTest {
     @Mock(mockMaker = MockMakers.SUBCLASS)
     private UserRepository userRepository;
 
+    @Mock(mockMaker = MockMakers.SUBCLASS)
+    private RoleRepository roleRepository;
+
     private BCryptPasswordEncoder passwordEncoder;
     private UserService userService;
     private User user;
@@ -35,7 +38,7 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserService(userRepository, passwordEncoder);
+        userService = new UserService(userRepository, roleRepository, passwordEncoder);
         user = new User();
         user.setEmail(EMAIL);
         user.setPasswordHash(passwordEncoder.encode(CURRENT_PASSWORD));
